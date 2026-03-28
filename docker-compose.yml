@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: spendscope
+      POSTGRES_PASSWORD: spendscope
+      POSTGRES_DB: spendscope
+    ports:
+      - "5432:5432"
+    volumes:
+      - spendscope_pg:/var/lib/postgresql/data
+
+volumes:
+  spendscope_pg:

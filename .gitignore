@@ -1,0 +1,27 @@
+# Secrets (keep examples)
+.env
+**/.env
+!.env.example
+!**/.env.example
+
+# Dependencies
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# SQLite / local DB
+*.db
+*.db-journal
+
+# Logs & debug
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
