@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import api from '../api/client'
 
 const AuthContext = createContext(null)
@@ -19,11 +19,36 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => readStoredUser())
   const [token, setToken] = useState(() => localStorage.getItem(STORAGE_TOKEN))
 
+  useEffect(() => {
+    if (!token) return undefined
+    let cancelled = false
+    api
+      .get('/me')
+      .then(({ data }) => {
+        if (!cancelled) {
+          localStorage.setItem(STORAGE_USER, JSON.stringify(data))
+          setUser(data)
+        }
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [token])
+
   const logout = useCallback(() => {
     localStorage.removeItem(STORAGE_TOKEN)
     localStorage.removeItem(STORAGE_USER)
     setToken(null)
     setUser(null)
+  }, [])
+
+  const updateSessionUser = useCallback((partial) => {
+    setUser((u) => {
+      const next = { ...(u || {}), ...partial }
+      localStorage.setItem(STORAGE_USER, JSON.stringify(next))
+      return next
+    })
   }, [])
 
   const login = useCallback(async (email, password) => {
@@ -35,8 +60,8 @@ export function AuthProvider({ children }) {
     return data.user
   }, [])
 
-  const register = useCallback(async (email, password) => {
-    const { data } = await api.post('/auth/register', { email, password })
+  const register = useCallback(async (email, password, name) => {
+    const { data } = await api.post('/auth/register', { email, password, name })
     localStorage.setItem(STORAGE_TOKEN, data.token)
     localStorage.setItem(STORAGE_USER, JSON.stringify(data.user))
     setToken(data.token)
@@ -52,8 +77,9 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      updateSessionUser,
     }),
-    [user, token, login, register, logout],
+    [user, token, login, register, logout, updateSessionUser],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -6,9 +6,15 @@ function signToken(userId) {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
 }
 
+function trimName(raw) {
+  if (raw === undefined || raw === null) return null
+  const n = String(raw).trim()
+  return n.length ? n.slice(0, 120) : null
+}
+
 async function register(req, res) {
   try {
-    const { email, password } = req.body
+    const { email, password, name } = req.body
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' })
     }
@@ -25,8 +31,16 @@ async function register(req, res) {
     }
     const passwordHash = await bcrypt.hash(password, 10)
     const user = await prisma.user.create({
-      data: { email: normalized, passwordHash },
-      select: { id: true, email: true, createdAt: true },
+      data: { email: normalized, passwordHash, name: trimName(name) },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        currency: true,
+        notifyReminders: true,
+        notifyReports: true,
+        createdAt: true,
+      },
     })
     const token = signToken(user.id)
     return res.status(201).json({ user, token })
@@ -49,7 +63,15 @@ async function login(req, res) {
     }
     const token = signToken(user.id)
     return res.json({
-      user: { id: user.id, email: user.email, createdAt: user.createdAt },
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        currency: user.currency,
+        notifyReminders: user.notifyReminders,
+        notifyReports: user.notifyReports,
+        createdAt: user.createdAt,
+      },
       token,
     })
   } catch (e) {

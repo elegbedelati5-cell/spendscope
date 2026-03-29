@@ -1,0 +1,152 @@
+@keyframes aura-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(8%, 12%) scale(1.08); }
+  66% { transform: translate(-6%, 4%) scale(0.95); }
+}
+@keyframes aura-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate(-12%, -8%) scale(1.12) rotate(8deg); }
+}
+@keyframes aura-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40% { transform: translate(10%, -10%) scale(1.05); }
+  80% { transform: translate(-4%, 8%) scale(0.92); }
+}
+@keyframes aura-drift-4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-8%, 14%) scale(1.1); }
+}
+@keyframes auth-card-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes auth-float-1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(6px, -10px); }
+}
+@keyframes auth-float-2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-8px, 8px); }
+}
+@keyframes auth-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(4px, 6px) scale(1.08); }
+}
+@keyframes auth-landing-fade {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.aura-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(90px);
+}
+
+.aura-blob-1 {
+  width: min(70vw, 520px);
+  height: min(70vw, 520px);
+  top: -15%;
+  left: -25%;
+  background: radial-gradient(circle at 30% 30%, rgba(34, 211, 238, 0.55), rgba(99, 102, 241, 0.25) 45%, transparent 70%);
+  opacity: 0.65;
+  animation: aura-drift-1 22s ease-in-out infinite;
+}
+
+.aura-blob-2 {
+  width: min(55vw, 440px);
+  height: min(55vw, 440px);
+  top: 35%;
+  right: -20%;
+  background: radial-gradient(circle at 60% 40%, rgba(168, 85, 247, 0.5), rgba(59, 130, 246, 0.2) 50%, transparent 68%);
+  opacity: 0.55;
+  animation: aura-drift-2 26s ease-in-out infinite;
+}
+
+.aura-blob-3 {
+  width: min(60vw, 480px);
+  height: min(60vw, 480px);
+  bottom: -20%;
+  left: 15%;
+  background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.45), rgba(6, 182, 212, 0.25) 55%, transparent 72%);
+  opacity: 0.5;
+  animation: aura-drift-3 20s ease-in-out infinite;
+}
+
+.aura-blob-4 {
+  width: min(45vw, 360px);
+  height: min(45vw, 360px);
+  top: 10%;
+  left: 40%;
+  background: radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.35), transparent 65%);
+  opacity: 0.4;
+  animation: aura-drift-4 18s ease-in-out infinite;
+}
+
+.aura-arc {
+  position: absolute;
+  pointer-events: none;
+  border: 2px solid rgba(34, 211, 238, 0.12);
+  border-radius: 50%;
+  width: min(120vw, 900px);
+  height: min(120vw, 900px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -45%);
+  animation: aura-drift-2 32s ease-in-out infinite reverse;
+  filter: blur(1px);
+}
+
+.aura-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: repeating-radial-gradient(circle at 17% 32%, rgba(255, 255, 255, 0.09) 0 0.5px, transparent 0.5px 3px);
+  mix-blend-mode: overlay;
+}
+
+.auth-card-enter {
+  animation: auth-card-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.auth-landing-hero {
+  animation: auth-landing-fade 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.auth-float-orb-1 {
+  animation: auth-float-1 5s ease-in-out infinite;
+}
+
+.auth-float-orb-2 {
+  animation: auth-float-2 6s ease-in-out infinite 0.3s;
+}
+
+.auth-float-orb-3 {
+  animation: auth-float-3 4.5s ease-in-out infinite 0.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-blob-1,
+  .aura-blob-2,
+  .aura-blob-3,
+  .aura-blob-4,
+  .aura-arc {
+    animation: none !important;
+  }
+
+  .auth-card-enter,
+  .auth-landing-hero {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .auth-float-orb-1,
+  .auth-float-orb-2,
+  .auth-float-orb-3 {
+    animation: none !important;
+  }
+}
+

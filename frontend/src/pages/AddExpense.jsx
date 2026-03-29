@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import api from '../api/client'
-import { EXPENSE_CATEGORY_OPTIONS } from '../constants/categories'
+import { EXPENSE_CATEGORY_OPTIONS, EXPENSE_CATEGORIES } from '../constants/categories'
 import { formatNaira } from '../utils/format'
 
 const QUICK_AMOUNTS = [1000, 5000, 10000, 20000, 50000, 100000]
@@ -38,6 +38,7 @@ const inputError = `${inputBase} border-red-300 focus:border-red-500 focus:ring-
 
 export default function AddExpense() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState(EXPENSE_CATEGORY_OPTIONS[0].value)
   const [description, setDescription] = useState('')
@@ -53,6 +54,13 @@ export default function AddExpense() {
     const t = window.setTimeout(() => setSavedBanner(false), 5000)
     return () => window.clearTimeout(t)
   }, [savedBanner])
+
+  useEffect(() => {
+    const preset = location.state?.presetCategory
+    if (preset && EXPENSE_CATEGORIES.includes(preset)) {
+      setCategory(preset)
+    }
+  }, [location.state])
 
   function resetForm() {
     setAmount('')

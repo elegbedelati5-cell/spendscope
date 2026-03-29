@@ -1,0 +1,127 @@
+/**
+ * Plain CSS only — loaded after Tailwind so entrance animations are not dropped/overridden.
+ */
+
+@keyframes tx-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tx-filtered-frame-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tx-filtered-stats-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tx-filtered-shimmer {
+  0% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes tx-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tx-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tx-empty-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.tx-animate-fade-up {
+  animation: tx-fade-up 0.45s ease-out both;
+}
+
+.tx-filtered-card-frame {
+  animation: tx-filtered-frame-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center top;
+}
+
+.tx-filtered-card-stats {
+  animation: tx-filtered-stats-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.tx-filtered-skeleton {
+  animation: tx-filtered-shimmer 1.2s ease-in-out infinite;
+}
+
+.tx-row-enter {
+  animation: tx-fade-up 0.38s ease-out both;
+  animation-delay: var(--tx-delay, 0ms);
+}
+
+.tx-backdrop-in {
+  animation: tx-backdrop-in 0.22s ease-out both;
+}
+
+.tx-modal-in {
+  animation: tx-modal-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tx-empty-icon {
+  animation: tx-empty-float 3.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tx-animate-fade-up,
+  .tx-filtered-card-frame,
+  .tx-filtered-card-stats,
+  .tx-filtered-skeleton,
+  .tx-row-enter,
+  .tx-backdrop-in,
+  .tx-modal-in,
+  .tx-empty-icon {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

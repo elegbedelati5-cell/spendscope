@@ -8,6 +8,7 @@ import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import AddExpense from './pages/AddExpense'
 import Transactions from './pages/Transactions'
+import Settings from './pages/Settings'
 
 function LandingGate() {
   const { isAuthenticated } = useAuth()
@@ -54,6 +55,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="add" element={<AddExpense />} />
             <Route path="transactions" element={<Transactions />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

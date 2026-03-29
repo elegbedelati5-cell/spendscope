@@ -4,6 +4,7 @@ const cors = require('cors')
 const authRoutes = require('./routes/authRoutes')
 const expenseRoutes = require('./routes/expenseRoutes')
 const analyticsRoutes = require('./routes/analyticsRoutes')
+const meRoutes = require('./routes/meRoutes')
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -42,6 +43,7 @@ app.get('/health', (_req, res) => res.json({ ok: true }))
 app.use('/auth', authRoutes)
 app.use('/expenses', expenseRoutes)
 app.use('/analytics', analyticsRoutes)
+app.use('/me', meRoutes)
 
 app.use((err, _req, res, _next) => {
   console.error(err)

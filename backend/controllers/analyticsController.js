@@ -39,24 +39,57 @@ async function clustersInRange(userId, start, end) {
   return out
 }
 
-function buildInsights(totalThisMonth, clustersThis, transportThis, transportLast) {
+function nairaRough(n) {
+  return `₦${Math.round(Number(n)).toLocaleString('en-NG')}`
+}
+
+function buildInsights(now, totalThisMonth, totalLastMonth, clustersThis, transportThis, transportLast, expenseCount) {
   const insights = []
-  if (totalThisMonth > 0 && Object.keys(clustersThis).length) {
-    const sorted = Object.entries(clustersThis).sort((a, b) => b[1] - a[1])
+  const catEntries = Object.entries(clustersThis).filter(([, v]) => v > 0)
+
+  if (totalThisMonth > 0 && catEntries.length) {
+    const sorted = catEntries.sort((a, b) => b[1] - a[1])
     const [topCat, topAmt] = sorted[0]
     const pct = Math.round((topAmt / totalThisMonth) * 100)
-    insights.push(`You spent ${pct}% of your money on ${topCat} this month.`)
+    insights.push(`${topCat} leads with ${pct}% of this month’s spending.`)
   }
-  if (transportLast > 0) {
+
+  if (totalThisMonth > 0 && expenseCount > 0) {
+    const dayOfMonth = now.getDate()
+    const avg = totalThisMonth / dayOfMonth
+    insights.push(
+      `About ${nairaRough(avg)} per day on average so far, across ${expenseCount} expense${expenseCount === 1 ? '' : 's'}.`,
+    )
+  }
+
+  if (catEntries.length >= 2) {
+    const sorted = catEntries.sort((a, b) => b[1] - a[1])
+    const [secondCat] = sorted[1]
+    insights.push(`${secondCat} is your next biggest category — a good place to spot savings.`)
+  } else if (totalThisMonth > 0 && catEntries.length === 1) {
+    insights.push('All recorded spending is in one category this month — try splitting tags for clearer trends.')
+  }
+
+  if (insights.length < 3 && transportLast > 0) {
     const change = ((transportThis - transportLast) / transportLast) * 100
     if (Math.abs(change) >= 1) {
-      const dir = change > 0 ? 'increased' : 'decreased'
-      insights.push(`Transport spending ${dir} by ${Math.abs(Math.round(change))}% vs last month.`)
+      const dir = change > 0 ? 'up' : 'down'
+      insights.push(`Transport is ${dir} ${Math.abs(Math.round(change))}% compared with last month.`)
     }
-  } else if (transportThis > 0 && transportLast === 0) {
-    insights.push('You had no transport spending last month; this month has new transport costs.')
+  } else if (insights.length < 3 && transportThis > 0 && transportLast === 0) {
+    insights.push('Transport costs appeared this month — worth tracking week to week.')
   }
-  return insights
+
+  if (totalLastMonth > 0 && totalThisMonth > 0 && insights.length < 3) {
+    const change = ((totalThisMonth - totalLastMonth) / totalLastMonth) * 100
+    if (Math.abs(change) >= 0.5) {
+      insights.push(
+        `Overall spending is ${change > 0 ? 'higher' : 'lower'} than last month by about ${Math.abs(Math.round(change))}%.`,
+      )
+    }
+  }
+
+  return insights.slice(0, 3)
 }
 
 function transportSum(clusters) {
@@ -100,16 +133,21 @@ async function getDashboard(req, res) {
     const lastStart = startOfMonth(addMonths(now, -1))
     const lastEnd = endOfMonth(addMonths(now, -1))
 
-    const [totalThisMonth, clustersThis, clustersLast, recent] = await Promise.all([
-      sumInRange(userId, thisStart, thisEnd),
-      clustersInRange(userId, thisStart, thisEnd),
-      clustersInRange(userId, lastStart, lastEnd),
-      prisma.expense.findMany({
-        where: { userId },
-        orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
-        take: 10,
-      }),
-    ])
+    const [totalThisMonth, totalLastMonth, clustersThis, clustersLast, expenseCountThisMonth, recent] =
+      await Promise.all([
+        sumInRange(userId, thisStart, thisEnd),
+        sumInRange(userId, lastStart, lastEnd),
+        clustersInRange(userId, thisStart, thisEnd),
+        clustersInRange(userId, lastStart, lastEnd),
+        prisma.expense.count({
+          where: { userId, date: { gte: thisStart, lte: thisEnd } },
+        }),
+        prisma.expense.findMany({
+          where: { userId },
+          orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
+          take: 10,
+        }),
+      ])
 
     const monthSlices = []
     for (let i = 5; i >= 0; i -= 1) {
@@ -129,10 +167,26 @@ async function getDashboard(req, res) {
 
     const transportThis = transportSum(clustersThis)
     const transportLast = transportSum(clustersLast)
-    const insights = buildInsights(totalThisMonth, clustersThis, transportThis, transportLast)
+    const insights = buildInsights(
+      now,
+      totalThisMonth,
+      totalLastMonth,
+      clustersThis,
+      transportThis,
+      transportLast,
+      expenseCountThisMonth,
+    )
+
+    let spendingChangePercent = null
+    if (totalLastMonth > 0) {
+      spendingChangePercent = ((totalThisMonth - totalLastMonth) / totalLastMonth) * 100
+    }
 
     return res.json({
       totalThisMonth,
+      totalLastMonth,
+      spendingChangePercent,
+      expenseCountThisMonth,
       clusters: clustersThis,
       monthlyTrend,
       recentTransactions: recent.map((e) => ({

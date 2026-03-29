@@ -46,39 +46,90 @@ async function createExpense(req, res) {
   }
 }
 
+function buildExpenseWhere(userId, { from, toQ, category, search }) {
+  const and = [{ userId }];
+
+  if (from || toQ) {
+    const date = {};
+    if (from) {
+      const f = parseDateOnly(from);
+      if (!f) return { error: 'Invalid from date' };
+      date.gte = f;
+    }
+    if (toQ) {
+      const t = parseDateOnly(toQ);
+      if (!t) return { error: 'Invalid to date' };
+      date.lte = t;
+    }
+    and.push({ date });
+  }
+
+  if (category && String(category).trim()) {
+    and.push({ category: String(category).trim() });
+  }
+
+  const q = search != null ? String(search).trim() : '';
+  if (q) {
+    and.push({
+      OR: [
+        { description: { contains: q } },
+        { category: { contains: q } },
+      ],
+    });
+  }
+
+  return { where: { AND: and } };
+}
+
 async function listExpenses(req, res) {
   try {
     const userId = req.userId;
     const from = req.query.from;
     const toQ = req.query.to;
     const category = req.query.category;
-    const where = { userId };
-    if (from || toQ) {
-      where.date = {};
-      if (from) {
-        const f = parseDateOnly(from);
-        if (!f) return res.status(400).json({ error: 'Invalid from date' });
-        where.date.gte = f;
-      }
-      if (toQ) {
-        const t = parseDateOnly(toQ);
-        if (!t) return res.status(400).json({ error: 'Invalid to date' });
-        where.date.lte = t;
-      }
+    const search = req.query.search;
+
+    const built = buildExpenseWhere(userId, { from, toQ, category, search });
+    if (built.error) {
+      return res.status(400).json({ error: built.error });
     }
-    if (category && String(category).trim()) {
-      where.category = String(category).trim();
-    }
-    const rows = await prisma.expense.findMany({
-      where,
-      orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
-    });
-    return res.json(
-      rows.map((e) => ({
+    const { where } = built;
+
+    const page = Math.max(1, parseInt(String(req.query.page), 10) || 1);
+    const rawSize = parseInt(String(req.query.pageSize), 10) || 25;
+    const pageSize = Math.min(100, Math.max(1, rawSize));
+    const skip = (page - 1) * pageSize;
+
+    const orderBy = [{ date: 'desc' }, { createdAt: 'desc' }];
+
+    const [rows, total, agg] = await Promise.all([
+      prisma.expense.findMany({
+        where,
+        orderBy,
+        skip,
+        take: pageSize,
+      }),
+      prisma.expense.count({ where }),
+      prisma.expense.aggregate({
+        where,
+        _sum: { amount: true },
+      }),
+    ]);
+
+    const totalAmount = Number(agg._sum.amount || 0);
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    return res.json({
+      items: rows.map((e) => ({
         ...e,
         amount: e.amount.toString(),
       })),
-    );
+      total,
+      page,
+      pageSize,
+      totalPages,
+      totalAmount,
+    });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: 'Could not load expenses' });
