@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   Bar,
   BarChart,
@@ -24,9 +24,20 @@ function yAxisTick(v) {
 }
 
 export default function Dashboard() {
+  const location = useLocation()
+  const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const [flash, setFlash] = useState(null)
+
+  useEffect(() => {
+    const msg = location.state?.flash
+    if (typeof msg === 'string' && msg.trim()) {
+      setFlash(msg.trim())
+      navigate(location.pathname, { replace: true, state: {} })
+    }
+  }, [location.pathname, location.state, navigate])
 
   useEffect(() => {
     let cancelled = false
@@ -73,6 +84,22 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
+      {flash ? (
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 shadow-sm"
+          role="status"
+        >
+          <span className="font-medium">{flash}</span>
+          <button
+            type="button"
+            onClick={() => setFlash(null)}
+            className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100"
+          >
+            Dismiss
+          </button>
+        </div>
+      ) : null}
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>

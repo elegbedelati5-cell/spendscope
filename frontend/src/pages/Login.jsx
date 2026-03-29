@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { getApiErrorMessage } from '../utils/apiErrorMessage'
 
 export default function Login() {
   const { login } = useAuth()
@@ -21,8 +22,7 @@ export default function Login() {
       await login(email, password)
       navigate(from, { replace: true })
     } catch (err) {
-      const msg = err.response?.data?.error || 'Could not log in'
-      setError(msg)
+      setError(getApiErrorMessage(err, 'Could not log in'))
     } finally {
       setLoading(false)
     }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { getApiErrorMessage } from '../utils/apiErrorMessage'
 
 export default function Signup() {
   const { register } = useAuth()
@@ -19,8 +20,7 @@ export default function Signup() {
       await register(email, password)
       navigate('/dashboard', { replace: true })
     } catch (err) {
-      const msg = err.response?.data?.error || 'Could not sign up'
-      setError(msg)
+      setError(getApiErrorMessage(err, 'Could not sign up'))
     } finally {
       setLoading(false)
     }
