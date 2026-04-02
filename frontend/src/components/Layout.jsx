@@ -1,6 +1,10 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import FloatingActionButton from './layout/FloatingActionButton'
 import { getDisplayName, getInitials } from '../utils/userDisplay'
 
 const COLLAPSE_KEY = 'spendscope_sidebar_collapsed'
@@ -74,6 +78,44 @@ function CollapseToggleIcon({ collapsed, className }) {
   )
 }
 
+function IconMoon({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+      />
+    </svg>
+  )
+}
+
+function IconSun({ className }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+      />
+    </svg>
+  )
+}
+
+function ThemeToggle({ className = '' }) {
+  const { theme, toggleTheme } = useTheme()
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className={`rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 ${className}`}
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      {theme === 'dark' ? <IconSun className="h-5 w-5" /> : <IconMoon className="h-5 w-5" />}
+    </button>
+  )
+}
+
 function MenuIcon() {
   return (
     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
@@ -95,15 +137,15 @@ function navLinkClass(isActive, collapsed) {
     'group flex w-full min-w-0 items-center rounded-xl border border-transparent text-sm font-medium transition-all duration-200',
     collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5',
     isActive
-      ? 'border-indigo-200 bg-indigo-600 text-white shadow-md shadow-indigo-600/25 ring-2 ring-indigo-500/30'
-      : 'text-slate-600 hover:border-slate-200 hover:bg-slate-100 hover:text-slate-900',
+      ? 'border-indigo-200 bg-indigo-600 text-white shadow-md shadow-indigo-600/25 ring-2 ring-indigo-500/30 dark:border-indigo-500/40 dark:bg-indigo-500 dark:ring-indigo-400/30'
+      : 'text-slate-600 hover:border-slate-200 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-100',
   ].join(' ')
 }
 
 function iconClass(isActive) {
   return [
     'h-5 w-5 shrink-0 transition-colors',
-    isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-700',
+    isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200',
   ].join(' ')
 }
 
@@ -143,7 +185,7 @@ function UserBlock({ user, collapsed }) {
   const initials = getInitials(user)
   return (
     <div
-      className={`flex min-w-0 items-center rounded-xl border border-slate-200 bg-slate-50/90 px-2 py-2.5 ${
+      className={`flex min-w-0 items-center rounded-xl border border-slate-200 bg-slate-50/90 px-2 py-2.5 dark:border-slate-700 dark:bg-slate-800/80 ${
         collapsed ? 'justify-center border-0 bg-transparent p-0' : 'gap-3'
       }`}
     >
@@ -155,8 +197,8 @@ function UserBlock({ user, collapsed }) {
       </div>
       {!collapsed ? (
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-slate-900">{display}</p>
-          <p className="truncate text-xs text-slate-500">{user?.email}</p>
+          <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{display}</p>
+          <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user?.email}</p>
         </div>
       ) : null}
     </div>
@@ -168,7 +210,7 @@ function LogoutButton({ collapsed, onLogout }) {
     <button
       type="button"
       onClick={onLogout}
-      className={`flex w-full items-center rounded-xl border border-transparent text-sm font-medium text-red-700 transition-colors hover:bg-red-50 ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}`}
+      className={`flex w-full items-center rounded-xl border border-transparent text-sm font-medium text-red-700 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50 ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}`}
       title={collapsed ? 'Log out' : undefined}
     >
       <IconLogout className="h-5 w-5 shrink-0" />
@@ -186,8 +228,13 @@ export default function Layout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const lg = useMediaQuery('(min-width: 1024px)')
+  const sm = useMediaQuery('(min-width: 640px)')
   const [menuOpen, setMenuOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1')
+
+  const mainPaddingLeft = !lg ? (sm ? 24 : 16) : collapsed ? 96 : 276
+  const hideFab = location.pathname.includes('/dashboard/add')
 
   useEffect(() => {
     setMenuOpen(false)
@@ -211,28 +258,23 @@ export default function Layout() {
     setMenuOpen(false)
   }
 
-  const desktopSidebarClass = [
-    'fixed left-0 top-0 z-30 hidden h-screen flex-col overflow-hidden border-r border-slate-200 bg-white py-7 shadow-sm transition-[width,padding] duration-200 ease-out lg:flex',
-    collapsed ? 'w-[4.75rem] px-2' : 'w-64 px-4',
-  ].join(' ')
-
-  /* literal classes so Tailwind includes arbitrary calc() values */
-  const mainOffsetClass = collapsed ? 'lg:pl-[calc(4.75rem+1.25rem)]' : 'lg:pl-[calc(16rem+1.25rem)]'
-
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#F8FAFC]">
-      <header className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur-sm lg:hidden">
-        <span className="text-lg font-bold tracking-tight text-indigo-600">SpendScope</span>
-        <button
-          type="button"
-          className="rounded-lg p-2 text-slate-700 hover:bg-slate-100"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav-panel"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          onClick={() => setMenuOpen((o) => !o)}
-        >
-          {menuOpen ? <CloseIcon /> : <MenuIcon />}
-        </button>
+    <div className="min-h-screen overflow-x-hidden bg-slate-50 dark:bg-slate-950">
+      <header className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90 lg:hidden">
+        <span className="text-lg font-bold tracking-tight text-indigo-600 dark:text-indigo-400">SpendScope</span>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav-panel"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            {menuOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
       </header>
 
       {menuOpen ? (
@@ -245,15 +287,17 @@ export default function Layout() {
           />
           <aside
             id="mobile-nav-panel"
-            className="absolute left-0 top-0 flex h-full w-[min(20rem,90vw)] flex-col overflow-hidden border-r border-slate-200 bg-white px-4 py-6 shadow-xl"
+            className="absolute left-0 top-0 flex h-full w-[min(20rem,90vw)] flex-col overflow-hidden border-r border-slate-200 bg-white px-4 py-6 shadow-xl dark:border-slate-800 dark:bg-slate-950"
           >
             <SidebarShell>
               <div className="mb-8 px-1">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-600">SpendScope</p>
-                <p className="mt-1 text-xs text-slate-500">Personal finance</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
+                  SpendScope
+                </p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Personal finance</p>
               </div>
               <SidebarNav collapsed={false} onNavigate={closeMenu} />
-              <div className="mt-auto space-y-3 border-t border-slate-200 pt-6">
+              <div className="mt-auto space-y-3 border-t border-slate-200 pt-6 dark:border-slate-800">
                 <UserBlock user={user} collapsed={false} />
                 <LogoutButton collapsed={false} onLogout={handleLogout} />
               </div>
@@ -263,47 +307,73 @@ export default function Layout() {
       ) : null}
 
       {/* Desktop: fixed rail — does not scroll with page */}
-      <aside className={desktopSidebarClass}>
-        <SidebarShell>
+      <motion.aside
+        className="fixed left-0 top-0 z-30 hidden h-screen flex-col overflow-hidden border-r border-slate-200/80 bg-white/80 py-7 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/85 lg:flex"
+        initial={false}
+        animate={{ width: collapsed ? 76 : 256 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+      >
+        <SidebarShell className={collapsed ? 'px-2' : 'px-4'}>
           <div
             className={`mb-6 flex shrink-0 gap-2 ${collapsed ? 'flex-col items-center px-0' : 'items-start justify-between px-1'}`}
           >
             {!collapsed ? (
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600">SpendScope</p>
-                <p className="mt-1.5 text-[11px] text-slate-500">Personal finance</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
+                  SpendScope
+                </p>
+                <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">Personal finance</p>
               </div>
             ) : (
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-base font-bold text-white shadow-sm"
+              <motion.div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-base font-bold text-white shadow-sm dark:bg-indigo-500"
                 aria-label="SpendScope"
                 title="SpendScope"
+                layout
               >
                 S
-              </div>
+              </motion.div>
             )}
-            <button
-              type="button"
-              onClick={toggleCollapsed}
-              className="shrink-0 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              <CollapseToggleIcon collapsed={collapsed} className="h-5 w-5" />
-            </button>
+            <div className={`flex shrink-0 items-center gap-0.5 ${collapsed ? 'flex-col' : ''}`}>
+              <ThemeToggle />
+              <button
+                type="button"
+                onClick={toggleCollapsed}
+                className="shrink-0 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                <CollapseToggleIcon collapsed={collapsed} className="h-5 w-5" />
+              </button>
+            </div>
           </div>
           <SidebarNav collapsed={collapsed} />
-          <div className="mt-auto shrink-0 space-y-3 border-t border-slate-200 pt-5">
+          <div className="mt-auto shrink-0 space-y-3 border-t border-slate-200 pt-5 dark:border-slate-800">
             <UserBlock user={user} collapsed={collapsed} />
             <LogoutButton collapsed={collapsed} onLogout={handleLogout} />
           </div>
         </SidebarShell>
-      </aside>
+      </motion.aside>
 
-      <main
-        className={`relative z-10 min-h-screen min-w-0 px-4 pb-12 pt-18 transition-[padding] duration-200 sm:px-6 lg:px-10 lg:pt-10 ${mainOffsetClass}`}
+      <motion.main
+        className="relative z-10 min-h-screen min-w-0 pr-4 pb-28 pt-18 sm:pr-6 lg:pr-10 lg:pt-10"
+        initial={false}
+        animate={{ paddingLeft: mainPaddingLeft }}
+        transition={{ type: 'spring', stiffness: 320, damping: 34 }}
       >
-        <Outlet />
-      </main>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
+      </motion.main>
+
+      <FloatingActionButton to="/dashboard/add" hidden={hideFab} />
     </div>
   )
 }

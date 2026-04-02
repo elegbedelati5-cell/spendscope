@@ -53,7 +53,7 @@ function DeleteExpenseButton({ onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 rounded-lg border border-red-200/90 bg-white px-2.5 py-1.5 text-xs font-semibold text-red-700 shadow-sm transition-all duration-200 ease-out hover:border-red-300 hover:bg-red-50 hover:text-red-800 hover:shadow-md active:scale-[0.96] motion-safe:hover:-translate-y-px"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-red-200/90 bg-white px-2.5 py-1.5 text-xs font-semibold text-red-700 shadow-sm transition-all duration-200 ease-out hover:border-red-300 hover:bg-red-50 hover:text-red-800 hover:shadow-md active:scale-[0.96] motion-safe:hover:-translate-y-px dark:border-red-800/80 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-950/50"
     >
       <TrashIcon className="h-3.5 w-3.5 shrink-0 opacity-80" />
       <span>Delete</span>
@@ -228,12 +228,12 @@ export default function Transactions() {
   const periodBtn = (active) =>
     `rounded-xl px-3 py-2 text-sm font-medium transition-colors sm:px-4 ${
       active
-        ? 'bg-indigo-600 text-white shadow-sm'
-        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+        ? 'bg-indigo-600 text-white shadow-sm dark:bg-indigo-500'
+        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
     }`
 
   const inputClass =
-    'mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20'
+    'mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-indigo-400 dark:focus:ring-indigo-400/20'
 
   const noFiltersActive =
     period === PERIOD.ALL && !from && !toQ && !category && !searchQuery
@@ -244,10 +244,10 @@ export default function Transactions() {
     <div className="space-y-7 sm:space-y-8">
       <div className="tx-animate-fade-up flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-3xl">
             Transactions
           </h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
             Search, filter by period or category, and export your history. Amounts use your active
             filters.
           </p>
@@ -256,7 +256,7 @@ export default function Transactions() {
           type="button"
           onClick={handleExportCsv}
           disabled={exporting || loading}
-          className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md active:translate-y-0 disabled:pointer-events-none disabled:opacity-50"
+          className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md active:translate-y-0 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-slate-500 dark:hover:bg-slate-800"
         >
           {exporting ? 'Exporting...' : 'Export CSV'}
         </button>
@@ -267,19 +267,19 @@ export default function Transactions() {
           key={filteredCardKey}
           className="tx-filtered-card-frame relative rounded-2xl border border-indigo-100/80 bg-linear-to-br from-indigo-600 via-indigo-600 to-violet-700 p-1 shadow-lg shadow-indigo-500/25 sm:rounded-3xl"
         >
-          <div className="relative overflow-hidden rounded-[0.875rem] bg-white sm:rounded-[1.25rem]">
+          <div className="relative overflow-hidden rounded-[0.875rem] bg-white dark:bg-slate-900 sm:rounded-[1.25rem]">
             <div
               className="pointer-events-none absolute inset-y-0 left-0 w-1.5 rounded-l-[0.875rem] bg-linear-to-b from-indigo-500 to-violet-600 sm:rounded-l-[1.25rem]"
               aria-hidden
             />
             <div className="px-6 py-6 pl-5 sm:px-8 sm:py-7 sm:pl-6">
-              <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-indigo-600/90">
+              <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-indigo-600/90 dark:text-indigo-400/90">
                 Filtered total
               </p>
               {loading ? (
                 <div className="mt-3 space-y-3" aria-busy="true" aria-label="Loading totals">
-                  <span className="tx-filtered-skeleton inline-block h-9 w-40 rounded-lg bg-slate-200/90 sm:h-11 sm:w-48" />
-                  <span className="tx-filtered-skeleton block h-4 w-56 rounded bg-slate-200/80" />
+                  <span className="tx-filtered-skeleton inline-block h-9 w-40 rounded-lg bg-slate-200/90 dark:bg-slate-700 sm:h-11 sm:w-48" />
+                  <span className="tx-filtered-skeleton block h-4 w-56 rounded bg-slate-200/80 dark:bg-slate-700" />
                 </div>
               ) : (
                 <div
@@ -291,8 +291,8 @@ export default function Transactions() {
                       {formatNaira(totalAmount)}
                     </span>
                   </p>
-                  <p className="text-sm font-medium text-slate-600">
-                    <span className="tabular-nums font-semibold text-slate-800">{total}</span>{' '}
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                    <span className="tabular-nums font-semibold text-slate-800 dark:text-slate-100">{total}</span>{' '}
                     transaction{total === 1 ? '' : 's'} in view
                   </p>
                 </div>
@@ -302,9 +302,9 @@ export default function Transactions() {
         </div>
       )}
 
-      <div className="tx-animate-fade-up space-y-6 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm sm:rounded-3xl sm:p-8">
+      <div className="tx-animate-fade-up space-y-6 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/90 sm:rounded-3xl sm:p-8">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Period</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Period</p>
           <div className="mt-2 flex flex-wrap gap-2">
             <button type="button" className={periodBtn(period === PERIOD.ALL)} onClick={setPeriodAll}>
               All time
@@ -336,7 +336,7 @@ export default function Transactions() {
         {(period === PERIOD.CUSTOM || period === PERIOD.ALL) && (
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
             <div className="min-w-0 flex-1 sm:max-w-44">
-              <label htmlFor="from" className="text-xs font-medium text-slate-600">
+              <label htmlFor="from" className="text-xs font-medium text-slate-600 dark:text-slate-300">
                 From
               </label>
               <input
@@ -351,7 +351,7 @@ export default function Transactions() {
               />
             </div>
             <div className="min-w-0 flex-1 sm:max-w-44">
-              <label htmlFor="to" className="text-xs font-medium text-slate-600">
+              <label htmlFor="to" className="text-xs font-medium text-slate-600 dark:text-slate-300">
                 To
               </label>
               <input
@@ -368,7 +368,7 @@ export default function Transactions() {
             <button
               type="button"
               onClick={applyCustomRange}
-              className="min-h-11 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white hover:bg-indigo-700"
+              className="min-h-11 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
             >
               Apply range
             </button>
@@ -377,10 +377,10 @@ export default function Transactions() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="search" className="text-xs font-medium text-slate-600">
+            <label htmlFor="search" className="text-xs font-medium text-slate-600 dark:text-slate-300">
               Search
             </label>
-            <p className="text-xs text-slate-400">Matches description or category</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">Matches description or category</p>
             <input
               id="search"
               type="search"
@@ -392,10 +392,10 @@ export default function Transactions() {
             />
           </div>
           <div>
-            <label htmlFor="cat" className="text-xs font-medium text-slate-600">
+            <label htmlFor="cat" className="text-xs font-medium text-slate-600 dark:text-slate-300">
               Category
             </label>
-            <p className="text-xs text-slate-400">Leave as All for every category</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">Leave as All for every category</p>
             <select id="cat" value={category} onChange={handleCategoryChange} className={inputClass}>
               <option value="">All categories</option>
               {EXPENSE_CATEGORIES.map((c) => (
@@ -409,13 +409,13 @@ export default function Transactions() {
       </div>
 
       {error ? (
-        <p className="tx-animate-fade-up rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800 shadow-sm ring-1 ring-red-100/80">
+        <p className="tx-animate-fade-up rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800 shadow-sm ring-1 ring-red-100/80 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200 dark:ring-red-900/30">
           {error}
         </p>
       ) : null}
 
       {loading ? (
-        <div className="tx-animate-fade-up flex items-center gap-4 rounded-2xl border border-slate-200/90 bg-white px-8 py-10 text-slate-600 shadow-sm sm:rounded-3xl">
+        <div className="tx-animate-fade-up flex items-center gap-4 rounded-2xl border border-slate-200/90 bg-white px-8 py-10 text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 sm:rounded-3xl">
           <span
             className="h-6 w-6 shrink-0 animate-spin rounded-full border-2 border-indigo-200 border-t-indigo-600"
             aria-hidden
@@ -423,7 +423,7 @@ export default function Transactions() {
           <span className="text-sm font-medium">Loading transactions...</span>
         </div>
       ) : total === 0 ? (
-        <div className="tx-animate-fade-up relative overflow-hidden rounded-2xl border-2 border-dashed border-slate-200/90 bg-linear-to-b from-slate-50 to-white px-8 py-16 text-center shadow-inner sm:rounded-3xl sm:py-20">
+        <div className="tx-animate-fade-up relative overflow-hidden rounded-2xl border-2 border-dashed border-slate-200/90 bg-linear-to-b from-slate-50 to-white px-8 py-16 text-center shadow-inner dark:border-slate-600 dark:from-slate-900 dark:to-slate-950 sm:rounded-3xl sm:py-20">
           <div
             className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-indigo-100/40 blur-3xl"
             aria-hidden
@@ -432,7 +432,7 @@ export default function Transactions() {
             className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-violet-100/35 blur-3xl"
             aria-hidden
           />
-          <div className="tx-empty-icon relative mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-md ring-1 ring-slate-200/80">
+          <div className="tx-empty-icon relative mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-md ring-1 ring-slate-200/80 dark:bg-slate-800 dark:ring-slate-600">
             <svg
               className="h-9 w-9 text-indigo-400"
               fill="none"
@@ -450,21 +450,21 @@ export default function Transactions() {
           </div>
           {noFiltersActive ? (
             <>
-              <p className="relative mt-8 text-xl font-bold tracking-tight text-slate-900">
+              <p className="relative mt-8 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
                 Your ledger is empty
               </p>
-              <p className="relative mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600">
-                Start on the dashboard with <span className="font-semibold text-slate-800">Add expense</span>.
+              <p className="relative mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                Start on the dashboard with <span className="font-semibold text-slate-800 dark:text-slate-100">Add expense</span>.
                 Every purchase you log will show up here with filters, search, and exports.
               </p>
             </>
           ) : (
             <>
-              <p className="relative mt-8 text-xl font-bold tracking-tight text-slate-900">
+              <p className="relative mt-8 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
                 No matches for these filters
               </p>
-              <p className="relative mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600">
-                Try <span className="font-semibold text-slate-800">All time</span>, clear the search
+              <p className="relative mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                Try <span className="font-semibold text-slate-800 dark:text-slate-100">All time</span>, clear the search
                 field, or pick another category. You can also widen the custom date range.
               </p>
             </>
@@ -477,20 +477,20 @@ export default function Transactions() {
               <li
                 key={tx.id}
                 style={{ '--tx-delay': `${Math.min(i, 12) * 45}ms` }}
-                className="tx-row-enter rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-100/80 transition-all duration-200 ease-out hover:border-slate-300 hover:shadow-md"
+                className="tx-row-enter rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-100/80 transition-all duration-200 ease-out hover:border-slate-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:ring-slate-800 dark:hover:border-slate-600"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-lg font-bold tabular-nums tracking-tight text-slate-900">
+                    <p className="text-lg font-bold tabular-nums tracking-tight text-slate-900 dark:text-slate-50">
                       {formatNaira(tx.amount)}
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-indigo-900/80">{tx.category}</p>
+                    <p className="mt-1 text-sm font-semibold text-indigo-900/80 dark:text-indigo-300">{tx.category}</p>
                     {tx.description ? (
-                      <p className="mt-2 text-sm leading-relaxed text-slate-600">{tx.description}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{tx.description}</p>
                     ) : null}
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-3">
-                    <p className="text-xs font-medium text-slate-500">{formatDate(tx.date)}</p>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{formatDate(tx.date)}</p>
                     <DeleteExpenseButton onClick={() => setDeleteTarget(tx)} />
                   </div>
                 </div>
@@ -498,11 +498,11 @@ export default function Transactions() {
             ))}
           </ul>
 
-          <div className="tx-animate-fade-up hidden overflow-hidden rounded-2xl border-2 border-slate-200/90 bg-white shadow-md ring-1 ring-slate-100/50 md:block sm:rounded-3xl">
+          <div className="tx-animate-fade-up hidden overflow-hidden rounded-2xl border-2 border-slate-200/90 bg-white shadow-md ring-1 ring-slate-100/50 dark:border-slate-700 dark:bg-slate-900 dark:ring-slate-800 md:block sm:rounded-3xl">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[760px] border-collapse text-sm">
                 <thead>
-                  <tr className="border-b-2 border-slate-200 bg-linear-to-b from-slate-100 to-slate-50/95 text-left text-[0.7rem] font-bold uppercase tracking-wider text-slate-500">
+                  <tr className="border-b-2 border-slate-200 bg-linear-to-b from-slate-100 to-slate-50/95 text-left text-[0.7rem] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900/95 dark:text-slate-400">
                     <th className="whitespace-nowrap border-r border-slate-200/80 px-5 py-4 first:pl-6">
                       Date
                     </th>
@@ -523,19 +523,19 @@ export default function Transactions() {
                     <tr
                       key={tx.id}
                       style={{ '--tx-delay': `${Math.min(i, 14) * 38}ms` }}
-                      className="tx-row-enter group border-b border-slate-200/90 transition-all duration-200 ease-out last:border-b-0 hover:bg-linear-to-r hover:from-indigo-50/70 hover:to-white hover:shadow-[inset_4px_0_0_0_#6366f1]"
+                      className="tx-row-enter group border-b border-slate-200/90 transition-all duration-200 ease-out last:border-b-0 hover:bg-linear-to-r hover:from-indigo-50/70 hover:to-white hover:shadow-[inset_4px_0_0_0_#6366f1] dark:border-slate-700 dark:hover:from-indigo-950/50 dark:hover:to-slate-900"
                     >
-                      <td className="whitespace-nowrap border-r border-slate-100 px-5 py-4 align-middle text-slate-600 first:pl-6">
+                      <td className="whitespace-nowrap border-r border-slate-100 px-5 py-4 align-middle text-slate-600 first:pl-6 dark:border-slate-700 dark:text-slate-300">
                         {formatDate(tx.date)}
                       </td>
-                      <td className="whitespace-nowrap border-r border-slate-100 px-5 py-4 text-right align-middle font-bold tabular-nums tracking-tight text-slate-900">
+                      <td className="whitespace-nowrap border-r border-slate-100 px-5 py-4 text-right align-middle font-bold tabular-nums tracking-tight text-slate-900 dark:border-slate-700 dark:text-slate-50">
                         {formatNaira(tx.amount)}
                       </td>
-                      <td className="whitespace-nowrap border-r border-slate-100 px-5 py-4 align-middle font-semibold text-slate-800">
+                      <td className="whitespace-nowrap border-r border-slate-100 px-5 py-4 align-middle font-semibold text-slate-800 dark:border-slate-700 dark:text-slate-200">
                         {tx.category}
                       </td>
                       <td
-                        className="max-w-[14rem] truncate border-r border-slate-100 px-5 py-4 align-middle text-slate-600 sm:max-w-xs md:max-w-md"
+                        className="max-w-[14rem] truncate border-r border-slate-100 px-5 py-4 align-middle text-slate-600 dark:border-slate-700 dark:text-slate-400 sm:max-w-xs md:max-w-md"
                         title={tx.description || ''}
                       >
                         {tx.description || (
@@ -553,19 +553,19 @@ export default function Transactions() {
           </div>
 
           {totalPages > 1 ? (
-            <div className="tx-animate-fade-up flex flex-col items-center justify-between gap-5 rounded-2xl border border-slate-200/90 bg-white px-5 py-4 shadow-sm sm:flex-row sm:rounded-3xl sm:px-6">
-              <p className="text-sm text-slate-600">
+            <div className="tx-animate-fade-up flex flex-col items-center justify-between gap-5 rounded-2xl border border-slate-200/90 bg-white px-5 py-4 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:flex-row sm:rounded-3xl sm:px-6">
+              <p className="text-sm text-slate-600 dark:text-slate-300">
                 Page{' '}
-                <span className="tabular-nums font-bold text-slate-900">{page}</span>
-                <span className="mx-1 text-slate-400">/</span>
-                <span className="tabular-nums font-bold text-slate-900">{totalPages}</span>
+                <span className="tabular-nums font-bold text-slate-900 dark:text-slate-50">{page}</span>
+                <span className="mx-1 text-slate-400 dark:text-slate-500">/</span>
+                <span className="tabular-nums font-bold text-slate-900 dark:text-slate-50">{totalPages}</span>
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
                   type="button"
                   disabled={page <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="min-h-10 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35"
+                  className="min-h-10 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                 >
                   Previous
                 </button>
@@ -573,7 +573,7 @@ export default function Transactions() {
                   type="button"
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  className="min-h-10 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35"
+                  className="min-h-10 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                 >
                   Next
                 </button>
@@ -596,16 +596,16 @@ export default function Transactions() {
             aria-label="Close"
             onClick={() => !deleting && setDeleteTarget(null)}
           />
-          <div className="tx-modal-in relative w-full max-w-md rounded-2xl border border-slate-200/90 bg-white p-7 shadow-2xl shadow-slate-900/15 sm:rounded-3xl">
+          <div className="tx-modal-in relative w-full max-w-md rounded-2xl border border-slate-200/90 bg-white p-7 shadow-2xl shadow-slate-900/15 dark:border-slate-700 dark:bg-slate-900 sm:rounded-3xl">
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-600 ring-1 ring-red-100">
               <TrashIcon className="h-5 w-5" />
             </div>
-            <h2 id="delete-title" className="text-lg font-bold text-slate-900">
+            <h2 id="delete-title" className="text-lg font-bold text-slate-900 dark:text-slate-50">
               Delete this expense?
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+            <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               This cannot be undone. You are removing{' '}
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
                 {formatNaira(deleteTarget.amount)}
               </span>{' '}
               in <span className="font-semibold">{deleteTarget.category}</span>
@@ -622,7 +622,7 @@ export default function Transactions() {
                 type="button"
                 disabled={deleting}
                 onClick={() => setDeleteTarget(null)}
-                className="min-h-11 rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:bg-slate-50 disabled:opacity-50"
+                className="min-h-11 rounded-xl border border-slate-200 px-5 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
               >
                 Cancel
               </button>
