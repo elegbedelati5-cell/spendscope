@@ -210,6 +210,24 @@ npm run preview   # optional local preview of dist/
 
 Serve `frontend/dist` from a static host; add that origin to `FRONTEND_ORIGIN`.
 
+### Deploy frontend (Vercel)
+
+The **Express API is not run on Vercel** in this repo (long-lived Node server + Prisma). Deploy the **frontend** to Vercel and host the **backend** on any Node host (Render, Railway, Fly.io, a VPS, etc.) with HTTPS.
+
+1. **Push** this repository to GitHub (already typical for Vercel).
+2. In [Vercel](https://vercel.com): **Add New… → Project** → import the repo.
+3. **Root Directory:** set to `frontend` (monorepo).
+4. **Framework Preset:** Vite (auto-detected). Build: `npm run build`, Output: `dist` (defaults).
+5. **Environment variables** (Production — and Preview if you use previews):
+   - `VITE_API_URL` = your public API base URL, e.g. `https://your-api.example.com` (no trailing slash; must match what the browser can call with CORS).
+6. **Redeploy** after changing `VITE_API_URL` (Vite inlines env at build time).
+
+**Backend CORS:** On the API server, set `FRONTEND_ORIGIN` to your Vercel URL(s), e.g. `https://spendscope.vercel.app` or your custom domain. Comma-separate multiple origins if needed.
+
+**Client routing:** `frontend/vercel.json` rewrites unknown paths to `index.html` so React Router deep links (e.g. `/dashboard/settings`) work on refresh.
+
+**Database:** Production API should use a persistent database (e.g. PostgreSQL `DATABASE_URL`); ephemeral filesystems are a poor fit for SQLite on many PaaS hosts.
+
 ### Security notes (operators)
 
 - Use a long, random `JWT_SECRET` in production.
